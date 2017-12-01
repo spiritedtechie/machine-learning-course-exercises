@@ -50,7 +50,7 @@ r = (lambda / (2 * m)) * (tr' * tr);
 % combine to form regularized cost function
 J = c + r;
 
-grad = ( 1 / m * sum( (h - y) .* X ) ) + (lambda/m .* tr)';
+grad =  1 / m * ( X' * (h - y) ) + (lambda/m * tr);
 
 % =============================================================
 
