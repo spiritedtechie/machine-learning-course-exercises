@@ -41,8 +41,13 @@ h = sigmoid(X * theta);
 % Replace first theta with zeros as should not be used in regularization
 tr = [0; theta(2:end)];
 
-r = (lambda / (2 * m)) * (tr' * tr);
+% cost function
 c = 1 / m * sum( (-y .* log(h)) - ((1 - y) .* log(1 - h)) );
+
+% regularization
+r = (lambda / (2 * m)) * (tr' * tr);
+
+% combine to form regularized cost function
 J = c + r;
 
 grad = ( 1 / m * sum( (h - y) .* X ) ) + (lambda/m .* tr)';
