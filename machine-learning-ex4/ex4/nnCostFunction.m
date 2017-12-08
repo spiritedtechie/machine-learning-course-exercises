@@ -39,28 +39,35 @@ Theta2_grad = zeros(size(Theta2));
 %         cost function computation is correct by verifying the cost
 %         computed in ex4.m
 
-a1 = [ones(m,1) X];
-z2 = a1 * Theta1';
-a2 = sigmoid(z2);
+% Feed forward through neural network to find hypothesis
+A1 = [ones(m,1) X];
+Z2 = A1 * Theta1';
+A2 = sigmoid(Z2);
 
-a2 = [ones(m,1) a2];
-z3 = a2 * Theta2';
-a3 = sigmoid(z3);
+A2 = [ones(m,1) A2];
+Z3 = A2 * Theta2';
+A3 = sigmoid(Z3);
 
-% 5000x10 matrix of probabilities against each class
-h = a3;
+% Hypothesis - 5000x10 matrix of examples against probabilities
+% for each possible class (column number)
+H = A3;
 
-% converts a y=5000X1 to yrec=5000x10
-yrec = zeros(m, num_labels);
+% Converts a y=5000X1 to yrec=5000x10
+YR = zeros(m, num_labels);
 for i = 1:num_labels
-  yrec(:,i) = y==i;
+  YR(:,i) = (y == i);
 endfor
 
-% vectorised cost function
-d = (-yrec .* log(h)) - ( (1-yrec) .* log(1-h) );
-J = 1/m * sum(sum(d));
+% Cost function
+D = (-YR.* log(H)) - ((1 - YR) .* log(1 - H));
+c = 1 / m * sum(sum(D));
 
+% Regularization
+% Not  regularizing the terms that correspond to the bias.
+% For the matrices Theta1 and Theta2, this corresponds to removing the first column of each matrix.
+r = (lambda / (2 * m)) * (sum(sum(Theta1(:, 2:end) .^ 2)) + sum(sum(Theta2(:, 2:end) .^ 2)));
 
+J = c + r;
 
 %
 % Part 2: Implement the backpropagation algorithm to compute the gradients
