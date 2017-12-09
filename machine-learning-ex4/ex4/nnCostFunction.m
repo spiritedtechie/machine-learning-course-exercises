@@ -59,7 +59,7 @@ for i = 1:num_labels
 endfor
 
 % Cost function
-D = (-YR.* log(H)) - ((1 - YR) .* log(1 - H));
+D = (-YR .* log(H)) - ((1 - YR) .* log(1 - H));
 c = 1 / m * sum(sum(D));
 
 % Regularization
