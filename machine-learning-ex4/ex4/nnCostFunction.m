@@ -43,7 +43,6 @@ Theta2_grad = zeros(size(Theta2));
 A1 = [ones(m,1) X];
 Z2 = A1 * Theta1';
 A2 = sigmoid(Z2);
-
 A2 = [ones(m,1) A2];
 Z3 = A2 * Theta2';
 A3 = sigmoid(Z3);
@@ -58,15 +57,18 @@ for i = 1:num_labels
   YR(:,i) = (y == i);
 endfor
 
-% Cost function
+% Cost function without regularization
 D = (-YR .* log(H)) - ((1 - YR) .* log(1 - H));
 c = 1 / m * sum(sum(D));
 
 % Regularization
-% Not  regularizing the terms that correspond to the bias.
+% Not regularizing the terms that correspond to the bias.
 % For the matrices Theta1 and Theta2, this corresponds to removing the first column of each matrix.
-r = (lambda / (2 * m)) * (sum(sum(Theta1(:, 2:end) .^ 2)) + sum(sum(Theta2(:, 2:end) .^ 2)));
+Theta1_reg = [zeros(size(Theta1, 1), 1) Theta1(:, 2:end)];
+Theta2_reg = [zeros(size(Theta2, 1), 1) Theta2(:, 2:end)];
+r = (lambda / (2 * m)) * (sum(sum(Theta1_reg .^ 2)) + sum(sum(Theta2_reg .^ 2)));
 
+% Regularized cost function
 J = c + r;
 
 %
@@ -86,15 +88,12 @@ J = c + r;
 %               first time.
 %
 
+% Error factors of each layer
 S3 = A3 - YR;
 % need to add column of ones to Z2 which is then removed later
 S2 = (S3 * Theta2) .* sigmoidGradient([ones(size(Z2, 1), 1) Z2]);
-S2 = S2(:, 2:end);
-D1 = S2' * A1;
+D1 = S2(:, 2:end)' * A1;
 D2 = S3' * A2;
-
-Theta1_grad = (1 / m) * D1;
-Theta2_grad = (1 / m) * D2;
 
 % Part 3: Implement regularization with the cost function and gradients.
 %
@@ -104,19 +103,13 @@ Theta2_grad = (1 / m) * D2;
 %               and Theta2_grad from Part 2.
 %
 
+% Gradient regularization (no need to regularise first column of biases)
+R1 = (lambda/m) * Theta1_reg;
+R2 = (lambda/m) * Theta2_reg;
 
-
-
-
-
-
-
-
-
-
-
-
-
+% Gradients (partial derivatives) for theta parameters
+Theta1_grad = ((1 / m) * D1) + R1;
+Theta2_grad = ((1 / m) * D2) + R2;
 
 % -------------------------------------------------------------
 
@@ -124,6 +117,5 @@ Theta2_grad = (1 / m) * D2;
 
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
-
 
 end
