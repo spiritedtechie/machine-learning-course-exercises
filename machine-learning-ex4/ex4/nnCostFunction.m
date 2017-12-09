@@ -85,6 +85,17 @@ J = c + r;
 %               over the training examples if you are implementing it for the
 %               first time.
 %
+
+S3 = A3 - YR;
+% need to add column of ones to Z2 which is then removed later
+S2 = (S3 * Theta2) .* sigmoidGradient([ones(size(Z2, 1), 1) Z2]);
+S2 = S2(:, 2:end);
+D1 = S2' * A1;
+D2 = S3' * A2;
+
+Theta1_grad = (1 / m) * D1;
+Theta2_grad = (1 / m) * D2;
+
 % Part 3: Implement regularization with the cost function and gradients.
 %
 %         Hint: You can implement this around the code for
